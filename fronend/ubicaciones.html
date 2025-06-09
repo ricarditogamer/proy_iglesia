@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubicaciones - Iglesia de Dios del Perú</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        /* Video de fondo */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 0.3;
+        }
+
+        /* Barra de navegación mejorada */
+        .navbar {
+            background-color: #2a5c99;
+            padding: 10px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .nav-main {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+
+        .nav-dropdown-container {
+            position: relative;
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            padding: 15px;
+            min-width: 250px;
+            display: none;
+            z-index: 100;
+        }
+
+        .nav-dropdown-container:hover .nav-dropdown-menu {
+            display: block;
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 8px 0;
+            color: #555;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .nav-dropdown-menu a:hover {
+            color: #1a3e72;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login {
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-register {
+            background-color: #2a5c99;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .btn-register:hover {
+            background-color: #e05d00;
+        }
+
+        /* Contenido principal */
+        .map-section {
+            padding: 40px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            color: #1a3e72;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .section-description {
+            color: #555;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .locations-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-top: 2rem;
+        }
+
+        .sedes-list {
+            width: 40%;
+            padding: 25px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .sedes-list h2 {
+            color: #2a5c99;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+
+        .sedes-list h3 {
+            color: #1e4a7e;
+            margin: 1.5rem 0 0.8rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .sedes-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sedes-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .sedes-list li:last-child {
+            border-bottom: none;
+        }
+
+        .map-wrapper {
+            width: 58%;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            background-color: white;
+            padding: 15px;
+        }
+
+        .map-wrapper iframe {
+            width: 100%;
+            height: 700px;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .map-section-title {
+            text-align: center;
+            color: #1a3e72;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        /* Modal de registro */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-submit {
+            background-color: #1a3e72;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #14315d;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .locations-container {
+                flex-direction: column;
+            }
+
+            .sedes-list,
+            .map-wrapper {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .nav-main {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .auth-buttons {
+                margin-top: 10px;
+            }
+
+            .map-wrapper iframe {
+                height: 500px;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .nav-link {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+            .btn {
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+
+            .sedes-list {
+                padding: 15px;
+            }
+
+            .sedes-list h2 {
+                font-size: 1.5rem;
+            }
+
+            .sedes-list h3 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Video de fondo -->
+    <video autoplay muted loop class="video-background">
+        <source src="assets/videos/background.mp4" type="video/mp4">
+        Tu navegador no soporta videos HTML5
+    </video>
+
+    <!-- Barra de navegación mejorada -->
+    <header class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="logo">
+                <img src="assets/images/logo.png" alt="Iglesia de Dios del Perú">
+            </a>
+
+            <nav class="nav-main">
+                <a href="index.html" class="nav-link">Iglesia de Dios del Perú</a>
+                
+                <!-- Quienes Somos con menú desplegable -->
+                <div class="nav-dropdown-container">
+                    <a href="#" class="nav-link">QUIENES SOMOS</a>
+                    <div class="nav-dropdown-menu">
+                        <a href="#">Directiva Nacional</a>
+                        <a href="#">Misión y Visión</a>
+                        <a href="#">Historia</a>
+                        <a href="#">Principios Doctrinales</a>
+                        <a href="#">¿En qué creemos?</a>
+                    </div>
+                </div>
+                
+                <!-- Liderazgo con menú desplegable -->
+                <div class="nav-dropdown-container">
+                    <a href="#" class="nav-link">LIDERAZGO</a>
+                    <div class="nav-dropdown-menu">
+                        <a href="#">Consejo Nacional</a>
+                        <a href="#">Pastores</a>
+                        <a href="#">Redes Ministeriales</a>
+                    </div>
+                </div>
+                
+                <a href="recursos.html" class="nav-link">RECURSOS</a>
+                <a href="ubicaciones.html" class="nav-link active">UBICANOS</a>
+            </nav>
+
+            <div class="auth-buttons">
+                <a href="#" class="btn btn-login">Iniciar Sesión</a>
+                <a href="#" class="btn btn-register" id="registerBtn">Registrarse</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main>
+        <section class="map-section">
+            <div class="container">
+                <h1 class="section-title">Nuestras Sedes</h1>
+                <p class="section-description">Encuentra todas nuestras iglesias en la Región Norte Chico</p>
+                
+                <div class="locations-container">
+                    <div class="sedes-list">
+                        <h2>Nuestras Sedes y Encargados</h2>
+                        <ul>
+                            <h3>DISTRITO - BARRANCA</h3>
+                            <li>Cristo Viene Pronto - Jonas Cotrina Herrera - Bella Esperanza - Caraqueño</li>
+                            <li>Getsemaní - Arcadio Benedicto Mory Ortiz - San Mateo de Churlin - San Pedro de Choque</li>
+                            <li>Rios de Agua Viva - Ronal Romero Zorrilla - Cc poblado la paz s/n</li>
+                            <li>La Hermosa - Lister Denies Sanchez Morales - Calle Apurímac.s.n. Paramonga</li>
+                            <li>Centro de Misiones - Romulo Ayala Chavez - Huayto</li>
+                            <li>Jesucristo Rey de Reyes - Pedro Giraldo Pajuelo - Urbanización 7 de Junio Mz.D Lte. 14 - Paramonga.</li>
+                            <li>Cristo la única esperanza - Gonzalo Cotrina Cristobal - CP Puente Bolivar - Pativilca</li>
+                            <li>Nueva Vida - Sinai Vega Rodríguez - Pativilca. jiron Sucre.N.340</li>
+
+                            <h3>DISTRITO - BARRANCA</h3>
+                            <li>La Gloria de Dios - Macdonio Conqui Cotrina - Pampas de Velarde s/n</li>
+                            <li>Misión: El Faro - Liliana Huaman Collao - Puerto Supe</li>
+                            <li>Camino de Santidad - Andres Rodriguez Huerta - Santa Elena Norte</li>
+                            <li>Monte de los Olivos - Atarri - Timoteo Casariego Flores - Cerro de Pasamayo - Puerto Supe</li>
+                            <li>Monte de los Olivos - Barranca - Elia Garcia Lada - Manuel Bustamante - Las Casuarinas - Barranca</li>
+                            <li>Monte de los Olivos - Pedro Sanchez Tadeo - Andrés de los 492 - Barranca</li>
+
+                            <h3>DISTRITO - BARRANCA SUR</h3>
+                            <li>Misión: Vida eterna - Eldy Magdalena Segura Saavedra - Tablada chica/pasaje San Martin - SUPE</li>
+                            <li>Príncipe de Paz - Aquilino Cerna Gregorio - Laderas de San Nicolás comité 2</li>
+                            <li>Emmanuel - Jhon Vega Pichilingue - San Pedro Mártir s/n Puerto Supe</li>
+                            <li>Andares el Camino - Jesús Isaac Gonzales Rojas - Jr. Chimu Capac N° 760 Supe Pueblo</li>
+                            <li>Elim - Florisa Esther Calisto de Cerna - Leticia Puerto Supe</li>
+                            <li>Casa de Paz - Martín Rojas Trinidad - San Juan de Dios - Supe</li>
+                            <li>Agua Viva - Paul Nieto Tolentino - Jr. Espinar s/n Supe Pueblo</li>
+                            <li>Camino a la Salvación - Claudio Luna Espinoza - San Juan de Dios - Supe</li>
+                            <li>Shadai - Jani Alejo Ramos - San Juan de Dios - Supe</li>
+
+                            <h3>DISTRITO - MEDIO MUNDO</h3>
+                            <li>Sendas de vida eterna - natalia paquina palomino - Av. Dos de Mayo Mz.Q Lt.19 - medio mundo</li>
+                            <li>Fuente de vida - Eliseo Arquimio Zamudio - Av. Ramon Castilla Mz.97 Lt.2 santa cruz Medio Mundo</li>
+                            <li>Cristo es el camino - Marcelina Villadeza landa - Calle Huánuco Mz H Lt 1 - San Felipe</li>
+                            <li>Sendas al Cielo - Valentín Requelme Dino - Av. Buenos Aires tres piedras</li>
+                            <li>Camino al Cielo - Gremen Carrillo Obregon - Bellavista - Vegueta</li>
+
+                            <h3>DISTRITO - HUAURA</h3>
+                            <li>Luz y Vida - Lemuel Elmer Pacheco Claros - Av. Pedro P. Herrera s/n - Hualmay - Huacho</li>
+                            <li>Libertad en Cristo - Ricardo Vilca Jaimes - Jr. Simón Bolívar 170 - Huaura</li>
+                            <li>Nueva Jerusalén - Carquín - Ronald Arturo Cordova Arroyo - Las Brisias s/n Carquín</li>
+                            <li>Nueva Jerusalén - sta Rosa - Juan Lorenzo Alva López - Centro Poblado Casa Blanca y sus anexos - santa Rosa</li>
+                            <li>Manantial de vida - Hector Loyola - C. San Martín s/n - Santa Elvira - Sayán</li>
+                            <li>Monte Sión - Primavera - Ricardo Vilca Jaimes (resp.- Huaura) - Centro Poblado Primavera</li>
+                            <li>El Buen Pastor - Wagner Edino Olivas Zuluaga - Cp. Cañaverales sin número Huaura</li>
+                            <li>Casa de Dios - Wagner Edino Olivas Zuluaga - Centro Poblado el Sol de LOZA - Huaura</li>
+
+                            <h3>DISTRITO - HUARAL</h3>
+                            <li>Fe y Vida - TORIBIO LEDESMA ESTEBAN - La ladera de Montalva - Huaral</li>
+                            <li>Impacto de Amor y Poder - Dionisio Jara melgarejo - Calle Jorge montalvo - Huaral</li>
+                            <li>Embajadores de Cristo - Ezequiel Tarazona Luna - CP Retes - Huaral</li>
+                            <li>Manantial de vida - José Avila Cruz - CP. Macatón - Huaral</li>
+                            <li>Clínica de Cristo - Lázaro Morales David Alex - CP. Caporala II - Huaral</li>
+                            <li>NUEVA VISION - Jhon hernan Roca Changa - CP La ladrillera Huaral</li>
+                            <li>Monte Sinai - Nabaro Lucio Camacho Leiva - CP. Pueblo Libre - Chancay</li>
+                            <li>BETHEL - Eli Nehemías Asencios Saavedra - CP. Contigo Perú - Huaral</li>
+                            <li>Roca Eterna - Víctor Rodrigo Pacheco Alarcon - Prolong. Jose Olaya Mz.K Lte 27,28 Urb Las Casuarinas</li>
+                            <li>Salem - Franklin Quiñones Cifuentes - CP La Caleta Centenario - Chancay</li>
+                            <li>Monte de Horeb - Jacinto Orbegoso Bravo - Calle la Capilla Mz C Lt 4 - CP La Candelaria - Chancay</li>
+                            <li>Misión: Legado de Fe - Tito Grover Pacheco Claros - Urb. Abisov/Chancay Cercado</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="map-wrapper">
+                        <h2 class="map-section-title">LOCALIZADOR DE IGLESIAS</h2>
+                        <iframe src="https://www.google.com/maps/d/embed?mid=17iZ_4QQEcvrVEPanEKC267GDlxPFK8U&ehbc=2E312F" 
+                                loading="lazy" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de registro -->
+    <div id="modal-register" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Regístrate</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="name">Nombre</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Apellidos</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="birthdate">Fecha de nacimiento</label>
+                    <input type="date" id="birthdate" name="birthdate" required>
+                </div>
+                <div class="form-group">
+                    <label for="district">Distrito</label>
+                    <select id="district" name="district" required>
+                        <option value="">Selecciona tu distrito</option>
+                        <option value="Lima">Lima</option>
+                        <option value="Arequipa">Arequipa</option>
+                        <option value="Cusco">Cusco</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" minlength="6" required>
+                </div>
+                <button type="submit" class="btn-submit">Registrarse</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Script para el modal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener elementos
+            const modal = document.getElementById('modal-register');
+            const btnRegister = document.getElementById('registerBtn');
+            const spanClose = document.getElementsByClassName('close-modal')[0];
+            const form = document.getElementById('register-form');
+
+            // Abrir modal al hacer clic en Registrarse
+            btnRegister.onclick = function(e) {
+                e.preventDefault();
+                modal.style.display = 'flex';
+            }
+
+            // Cerrar modal al hacer clic en la X
+            spanClose.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+            // Cerrar modal al hacer clic fuera del contenido
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            // Manejar el envío del formulario
+            form.onsubmit = function(e) {
+                e.preventDefault();
+                // Aquí iría la lógica para procesar el registro
+                alert('Registro enviado correctamente');
+                modal.style.display = 'none';
+                form.reset();
+            }
+        });
+    </script>
+</body>
+</html>
